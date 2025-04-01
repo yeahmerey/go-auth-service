@@ -1,5 +1,7 @@
 package db
 
+import "time"
+
 type User struct {
 	ID       int
 	Username string
@@ -13,4 +15,11 @@ type Gym struct {
 	Address  string
 	Capacity int
 	Clients  int
+}
+
+type GymMember struct {
+	ID       int
+	UserID   int
+	GymID    int
+	JoinedAt time.Time
 }

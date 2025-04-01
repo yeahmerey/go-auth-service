@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -20,7 +19,7 @@ func main() {
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour)
 		defer ticker.Stop()
-		
+
 		for {
 			select {
 			case <-ticker.C:
@@ -29,11 +28,17 @@ func main() {
 		}
 	}()
 
-	// Регистрация обработчиков запросов
+	// Регистрация обработчиков запросов для аутентификации
 	http.HandleFunc("/register", handlers.Register)
 	http.HandleFunc("/login", handlers.Login)
-	http.HandleFunc("/logout", middleware.AuthMiddleware(handlers.Logout)) // Добавлен middleware для проверки авторизации
+	http.HandleFunc("/logout", middleware.AuthMiddleware(handlers.Logout))
+
+	// Регистрация обработчиков запросов для тренажерных залов
 	http.HandleFunc("/gyms", middleware.AuthMiddleware(handlers.GetGyms))
+	http.HandleFunc("/gyms/join", middleware.AuthMiddleware(handlers.JoinGym))
+	http.HandleFunc("/gyms/leave", middleware.AuthMiddleware(handlers.LeaveGym))
+	http.HandleFunc("/gyms/my", middleware.AuthMiddleware(handlers.GetUserGyms))
+	http.HandleFunc("/gyms/members", middleware.AuthMiddleware(handlers.GetGymMembers))
 
 	// Запуск сервера
 	log.Println("Server started on :8080")
