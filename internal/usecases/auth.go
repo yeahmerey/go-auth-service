@@ -26,3 +26,6 @@ func Login(username, password string) (map[string]string, error) {
 	}
 	return services.GenerateTokens(username)
 }
+func Logout(token string) error {
+	return services.BlacklistToken(token)
+}

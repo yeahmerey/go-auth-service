@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
+
 	"github.com/yeahmerey/go-auth-service/internal/usecases"
 )
 
@@ -34,6 +36,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	// В базовом варианте просто вернём 200 OK
+	// Получаем токен из заголовка
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Authorization header is required", http.StatusBadRequest)
+		return
+	}
+	
+	// Удаляем префикс "Bearer " если он есть
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	
+	// Добавляем токен в черный список
+	if err := usecases.Logout(token); err != nil {
+		http.Error(w, "Invalid token", http.StatusBadRequest)
+		return
+	}
+	
+	// Отправляем успешный ответ
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
 }
