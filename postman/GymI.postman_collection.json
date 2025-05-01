@@ -1,0 +1,239 @@
+{
+	"info": {
+		"_postman_id": "79f94e7f-645c-4d45-93c0-b5ee0b4cd674",
+		"name": "GymI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43547305",
+		"_collection_link": "https://mereykaliyev.postman.co/workspace/KBTU~072b321d-589e-4861-bbde-3895d61af6b9/collection/43547305-79f94e7f-645c-4d45-93c0-b5ee0b4cd674?action=share&source=collection_link&creator=43547305"
+	},
+	"item": [
+		{
+			"name": "Register of User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"miras\", \r\n    \"email\" : \"miras@mail.ru\", \r\n    \"password\" : \"mirAasb3k\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "A",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"miras\", \r\n    \"password\" : \"mirAasb3k\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Gyms",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pcmFzIiwiZXhwIjoxNzQ2NDk3OTU3fQ.NzDcRdUcB0NNrBALpBE_1rjr9Q-lxMyxgqhcrXODPYc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/gyms",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gyms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pcmFzIiwiZXhwIjoxNzQ2NDk3OTU3fQ.NzDcRdUcB0NNrBALpBE_1rjr9Q-lxMyxgqhcrXODPYc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Join to Gym",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pcmFzIiwiZXhwIjoxNzQ2NDk5MjE5fQ.bFaPTSZLV5erHVOTn_bpU9BFmQFX71r-rycFm5_ElaE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gym_id\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/gyms/join",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gyms",
+						"join"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "My Gyms",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pcmFzIiwiZXhwIjoxNzQ2NDk5MjE5fQ.bFaPTSZLV5erHVOTn_bpU9BFmQFX71r-rycFm5_ElaE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/gyms/my",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gyms",
+						"my"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leave from gym",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pcmFzIiwiZXhwIjoxNzQ2NDk5MjE5fQ.bFaPTSZLV5erHVOTn_bpU9BFmQFX71r-rycFm5_ElaE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/gyms/leave",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gyms",
+						"leave"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gym Members",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
