@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	// Черный список токенов: ключ - токен, значение - время истечения
+	// token , time of expiration 
 	tokenBlacklist     = make(map[string]time.Time)
 	tokenBlacklistLock sync.RWMutex
 )
 
-// BlacklistToken добавляет токен в черный список
+// BlacklistToken adds a token to the blacklist
 func BlacklistToken(tokenStr string) error {
 	claims, err := ValidateToken(tokenStr)
 	if err != nil {
@@ -21,22 +21,22 @@ func BlacklistToken(tokenStr string) error {
 	tokenBlacklistLock.Lock()
 	defer tokenBlacklistLock.Unlock()
 	
-	// Добавляем токен в черный список до времени его истечения
+	// add token to the blacklist with its expiration time
 	tokenBlacklist[tokenStr] = claims.ExpiresAt.Time
 	
 	return nil
 }
 
-// IsTokenBlacklisted проверяет, находится ли токен в черном списке
+// IsTokenBlacklisted checks if a token is in the blacklist
 func IsTokenBlacklisted(tokenStr string) bool {
 	tokenBlacklistLock.RLock()
 	defer tokenBlacklistLock.RUnlock()
 	
 	expTime, exists := tokenBlacklist[tokenStr]
 	
-	// Очистка устаревших токенов
+	// cleanup expired tokens
 	if exists && time.Now().After(expTime) {
-		// Отложенная очистка (в реальном приложении можно сделать отдельную горутину)
+		// cleanup expired token from the blacklist
 		go func() {
 			tokenBlacklistLock.Lock()
 			delete(tokenBlacklist, tokenStr)
@@ -48,7 +48,7 @@ func IsTokenBlacklisted(tokenStr string) bool {
 	return exists
 }
 
-// CleanupBlacklist удаляет просроченные токены из черного списка
+// CleanupBlacklist removes expired tokens from the blacklist
 func CleanupBlacklist() {
 	tokenBlacklistLock.Lock()
 	defer tokenBlacklistLock.Unlock()

@@ -12,10 +12,9 @@ import (
 )
 
 func main() {
-	// Инициализация базы данных
 	db.InitDB()
 
-	// Запускаем очистку черного списка токенов каждый час
+    //clean of blacklist
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour)
 		defer ticker.Stop()
@@ -28,19 +27,17 @@ func main() {
 		}
 	}()
 
-	// Регистрация обработчиков запросов для аутентификации
 	http.HandleFunc("/register", handlers.Register)
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/logout", middleware.AuthMiddleware(handlers.Logout))
-
-	// Регистрация обработчиков запросов для тренажерных залов
+	
 	http.HandleFunc("/gyms", middleware.AuthMiddleware(handlers.GetGyms))
 	http.HandleFunc("/gyms/join", middleware.AuthMiddleware(handlers.JoinGym))
 	http.HandleFunc("/gyms/leave", middleware.AuthMiddleware(handlers.LeaveGym))
 	http.HandleFunc("/gyms/my", middleware.AuthMiddleware(handlers.GetUserGyms))
 	http.HandleFunc("/gyms/members", middleware.AuthMiddleware(handlers.GetGymMembers))
 
-	// Запуск сервера
+	// runserver
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

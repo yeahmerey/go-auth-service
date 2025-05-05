@@ -1,0 +1,58 @@
+version: '3.8' # Используем актуальную версию Docker Compose
+
+services:
+  # Сервис вашего Go приложения
+  app:
+    build: . # Собираем образ из Dockerfile в текущей директории (.)
+    container_name: go_auth_app # Имя контейнера (опционально, но удобно)
+    ports:
+      - "8080:8080" # Пробрасываем порт 8080 хоста на порт 8080 контейнера
+    environment:
+      # Переменные окружения для вашего приложения
+      DB_USER: ${DB_USER:-postgres} # Используем переменную из .env или значение по умолчанию 'user'
+      DB_PASSWORD: ${DB_PASSWORD:-almaty2023} # Используем переменную из .env или значение по умолчанию 'password'
+      DB_NAME: ${DB_NAME:-auth_service} # Используем переменную из .env или значение по умолчанию 'authdb'
+      DB_HOST: db # !!! Важно: имя сервиса базы данных (см. ниже)
+      DB_PORT: 5432 # Стандартный порт Postgres
+      DB_SSLMODE: ${DB_SSLMODE:-disable} # По умолчанию выключаем SSL внутри Docker сети
+      JWT_SECRET: ${JWT_SECRET:-YourSuperSecretKey123!} # Используем переменную из .env или значение по умолчанию
+      PORT: ${PORT:-8080} # Порт, на котором приложение слушает внутри контейнера
+      DOCKER_ENV: "true" # Флаг, что мы работаем в Docker (для db.go)
+    depends_on:
+      db:
+        condition: service_healthy # Запускаем приложение только ПОСЛЕ того, как БД станет 'healthy'
+    networks:
+      - app_network # Подключаем к общей сети
+
+  # Сервис базы данных PostgreSQL
+  db:
+    image: postgres:17.4-alpine # Используем официальный образ Postgres (версия 15, alpine - легковесный)
+    container_name: go_auth_db
+    environment:
+      # Переменные для инициализации PostgreSQL
+      # !!! Важно: Эти значения ДОЛЖНЫ совпадать с DB_USER, DB_PASSWORD, DB_NAME для сервиса 'app'
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-almaty2023}
+      POSTGRES_DB: ${DB_NAME:-auth_service}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Сохраняем данные БД между перезапусками контейнера
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Копируем скрипт инициализации для создания таблиц при первом запуске
+    ports:
+      - "5432:5432" # Пробрасываем порт БД на хост (удобно для подключения внешними инструментами, как DBeaver/pgAdmin). УБЕРИТЕ ЭТО ДЛЯ PRODUCTION!
+    healthcheck:
+      # Проверка работоспособности БД перед тем, как 'app' начнет запускаться
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-authdb}"]
+      interval: 10s # Проверять каждые 10 секунд
+      timeout: 5s   # Ждать ответа 5 секунд
+      retries: 5    # Попробовать 5 раз
+    networks:
+      - app_network # Подключаем к общей сети
+
+# Определяем сети
+networks:
+  app_network:
+    driver: bridge # Стандартный драйвер сети
+
+# Определяем именованные тома для персистентности данных
+volumes:
+  postgres_data: # Том для хранения данных PostgreSQL

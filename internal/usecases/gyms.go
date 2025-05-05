@@ -21,7 +21,7 @@ func GetGyms() []Gym {
 	return gyms
 }
 func JoinGym(userID, gymID int) error {
-	// Проверяем, существует ли тренажерный зал
+	// check if gym exists
 	var exists bool
 	err := db.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM gyms WHERE id = $1)", gymID).Scan(&exists)
 	if err != nil {
@@ -31,7 +31,7 @@ func JoinGym(userID, gymID int) error {
 		return errors.New("gym not found")
 	}
 	
-	// Проверяем, не достигнута ли максимальная емкость зала
+	// check capacity
 	var capacity, clients int
 	err = db.DB.QueryRow("SELECT capacity, clients FROM gyms WHERE id = $1", gymID).Scan(&capacity, &clients)
 	if err != nil {
@@ -42,14 +42,14 @@ func JoinGym(userID, gymID int) error {
 		return errors.New("gym is at full capacity")
 	}
 	
-	// Начинаем транзакцию
+	// do transaction
 	tx, err := db.DB.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 	
-	// Добавляем запись в gym_members
+	// add user to gym_members
 	_, err = tx.Exec(
 		"INSERT INTO gym_members (user_id, gym_id, joined_at) VALUES ($1, $2, $3) ON CONFLICT (user_id, gym_id) DO NOTHING",
 		userID, gymID, time.Now(),
@@ -58,24 +58,24 @@ func JoinGym(userID, gymID int) error {
 		return err
 	}
 	
-	// Обновляем количество клиентов в зале
+	// update gym clients count
 	_, err = tx.Exec("UPDATE gyms SET clients = clients + 1 WHERE id = $1", gymID)
 	if err != nil {
 		return err
 	}
 	
-	// Фиксируем транзакцию
+	// fix commit transaction
 	return tx.Commit()
 }
 func LeaveGym(userID, gymID int) error {
-	// Начинаем транзакцию
+	// start transaction
 	tx, err := db.DB.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 	
-	// Проверяем, является ли пользователь членом этого зала
+	// check is user is a member of the gym
 	var exists bool
 	err = tx.QueryRow("SELECT EXISTS(SELECT 1 FROM gym_members WHERE user_id = $1 AND gym_id = $2)", userID, gymID).Scan(&exists)
 	if err != nil {
@@ -85,19 +85,19 @@ func LeaveGym(userID, gymID int) error {
 		return errors.New("user is not a member of this gym")
 	}
 	
-	// Удаляем запись из gym_members
+	// delete data from gym_members
 	_, err = tx.Exec("DELETE FROM gym_members WHERE user_id = $1 AND gym_id = $2", userID, gymID)
 	if err != nil {
 		return err
 	}
 	
-	// Обновляем количество клиентов в зале
+	// update gym clients count
 	_, err = tx.Exec("UPDATE gyms SET clients = clients - 1 WHERE id = $1", gymID)
 	if err != nil {
 		return err
 	}
 	
-	// Фиксируем транзакцию
+	// fix commit transaction
 	return tx.Commit()
 }
 func GetUserGyms(userID int) ([]db.Gym, error) {

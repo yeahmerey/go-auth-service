@@ -36,23 +36,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	// Получаем токен из заголовка
+	// get token from Authorization header
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		http.Error(w, "Authorization header is required", http.StatusBadRequest)
 		return
 	}
 	
-	// Удаляем префикс "Bearer " если он есть
+	// delete if token is in the blacklist
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 	
-	// Добавляем токен в черный список
+	// add token to the blacklist
 	if err := usecases.Logout(token); err != nil {
 		http.Error(w, "Invalid token", http.StatusBadRequest)
 		return
 	}
 	
-	// Отправляем успешный ответ
+	// send success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
